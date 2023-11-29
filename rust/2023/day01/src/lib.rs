@@ -31,6 +31,7 @@ pub fn process_part2(input: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     const INPUT: &str = "1000
 2000
 3000
@@ -47,7 +48,7 @@ mod tests {
 10000";
 
     #[test]
-    fn pert1_works() {
+    fn part1_works() {
         let result = process_part1(INPUT);
         assert_eq!(result, "24000");
     }
