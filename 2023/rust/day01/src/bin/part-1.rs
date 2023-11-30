@@ -1,8 +1,7 @@
 use day01::process_part1;
-use std::fs;
 
 fn main() {
-    let file = fs::read_to_string("./input.txt").unwrap();
+    let file = include_str!("../../input.txt");
 
-    println!("{}", process_part1(&file));
+    println!("{}", process_part1(file));
 }
