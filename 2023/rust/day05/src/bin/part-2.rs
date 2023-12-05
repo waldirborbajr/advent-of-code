@@ -9,11 +9,7 @@ fn main() {
     println!("Part 2 answer: {answer}");
 
     let elapsed = starttime.elapsed();
-    println!(
-        "took {}ms ({}us)  ",
-        elapsed.as_millis(),
-        elapsed.as_micros()
-    );
+    println!("took {}ms ({}us)", elapsed.as_millis(), elapsed.as_micros());
 }
 
 fn process(input: &str) -> usize {
