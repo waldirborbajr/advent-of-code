@@ -1,33 +1,65 @@
 use std::collections::{HashMap, HashSet};
 
-pub fn process_part1(input: &str) -> u32 {
+pub fn process_part1(input: &str) -> i32 {
     input
         .lines()
-        .map(|card| {
-            match card
-                .split(": ")
+        .map(|x| x.split(':').collect::<Vec<_>>())
+        .map(|x| *x.last().expect(""))
+        .map(|x| x.split('|').collect::<Vec<_>>())
+        .map(|x| {
+            let first = x
+                .first()
+                .expect("some")
+                .split(' ')
+                .filter(|x| x != &"")
+                .collect::<Vec<_>>();
+            // println!("first {first:?}");
+            let last = x
                 .last()
-                .expect("the card contains a ': '")
-                .split("| ")
-                .map(|group| {
-                    group
-                        .split_whitespace()
-                        .map(|number| number.parse::<u32>().expect("each element is a u32"))
-                        .collect::<HashSet<u32>>()
-                })
-                .reduce(|acc, group| {
-                    acc.intersection(&group)
-                        .map(|number| *number)
-                        .collect::<HashSet<u32>>()
-                })
-                .expect("there are two groups")
-                .len()
-            {
-                0 => 0,
-                wins => 2_u32.pow((wins as u32) - 1),
-            }
+                .expect("some")
+                .split(' ')
+                .filter(|x| x != &"")
+                .collect::<Vec<_>>();
+            let ve = first
+                .iter()
+                .filter(|x| last.contains(x))
+                .cloned()
+                .collect::<Vec<_>>();
+            ve
         })
-        .sum::<u32>()
+        .filter(|x| !x.is_empty())
+        .map(|x| {
+            let cal = |n: i32| 2i32.pow((n - 1) as u32);
+            cal(x.len() as i32)
+        })
+        .sum::<i32>()
+    // input
+    //     .lines()
+    //     .map(|card| {
+    //         match card
+    //             .split(": ")
+    //             .last()
+    //             .expect("the card contains a ': '")
+    //             .split("| ")
+    //             .map(|group| {
+    //                 group
+    //                     .split_whitespace()
+    //                     .map(|number| number.parse::<u32>().expect("each element is a u32"))
+    //                     .collect::<HashSet<u32>>()
+    //             })
+    //             .reduce(|acc, group| {
+    //                 acc.intersection(&group)
+    //                     .map(|number| *number)
+    //                     .collect::<HashSet<u32>>()
+    //             })
+    //             .expect("there are two groups")
+    //             .len()
+    //         {
+    //             0 => 0,
+    //             wins => 2_u32.pow((wins as u32) - 1),
+    //         }
+    //     })
+    //     .sum::<u32>()
 }
 
 pub fn process_part2(input: &str) -> u32 {
