@@ -4,7 +4,7 @@ fn main() {
     let starttime = std::time::Instant::now();
 
     let answer = process(input);
-    println!("Part 2 answer: {answer}");
+    println!("Part 1 answer: {answer}");
 
     let elapsed = starttime.elapsed();
     println!(
@@ -14,32 +14,129 @@ fn main() {
     );
 }
 
-fn process(input: &str) -> usize {
-    let input: Vec<String> = input
-        .lines() // split the string into an iterator of string slices
-        .map(String::from) // make each slice into a string
-        .collect();
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum Card {
+    Joker,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten,
+    Queen,
+    King,
+    Ace,
+}
 
-    let time: u64 = input[0].split_whitespace().collect::<Vec<&str>>()[1..]
-        .to_vec()
-        .join("")
-        .parse()
-        .unwrap();
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Hand {
+    cards: Vec<Card>,
+}
 
-    let record: u64 = input[1].split_whitespace().collect::<Vec<&str>>()[1..]
-        .to_vec()
-        .join("")
-        .parse()
-        .unwrap();
+use std::cmp::Ordering;
 
-    let mut total = 0;
-    for i in 0..time {
-        if (time - i) * i > record {
-            total += 1;
+impl PartialOrd for Hand {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Hand {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.cards.len() != other.cards.len() {
+            return self.cards.len().cmp(&other.cards.len());
         }
+
+        let mut jokers1 = 0;
+        let mut jokers2 = 0;
+
+        let mut counter1 = self.cards.iter().fold([0; 13], |mut counter, card| {
+            if *card == Card::Joker {
+                jokers1 += 1;
+            } else {
+                counter[*card as usize] += 1;
+            }
+            counter
+        });
+        counter1.sort();
+        counter1.reverse();
+        let mut counter2 = other.cards.iter().fold([0; 13], |mut counter, card| {
+            if *card == Card::Joker {
+                jokers2 += 1;
+            } else {
+                counter[*card as usize] += 1;
+            }
+            counter
+        });
+        counter2.sort();
+        counter2.reverse();
+
+        counter1[0] += jokers1;
+        counter2[0] += jokers2;
+        for (a, b) in counter1.iter().zip(counter2.iter()) {
+            if a != b {
+                return a.cmp(b);
+            }
+        }
+
+        for (a, b) in self.cards.iter().zip(other.cards.iter()) {
+            if a != b {
+                return a.cmp(b);
+            }
+        }
+
+        Ordering::Equal
+    }
+}
+
+impl Hand {
+    fn from_str(hand_str: &str) -> Result<Hand, &'static str> {
+        let mut cards = Vec::new();
+        for ch in hand_str.chars() {
+            let card = match ch {
+                'J' => Card::Joker,
+                '2' => Card::Two,
+                '3' => Card::Three,
+                '4' => Card::Four,
+                '5' => Card::Five,
+                '6' => Card::Six,
+                '7' => Card::Seven,
+                '8' => Card::Eight,
+                '9' => Card::Nine,
+                'T' => Card::Ten,
+                'Q' => Card::Queen,
+                'K' => Card::King,
+                'A' => Card::Ace,
+                _ => return Err("Invalid character in hand string"),
+            };
+            cards.push(card);
+        }
+        Ok(Hand { cards })
+    }
+}
+
+pub fn process(input: &str) -> i64 {
+    let mut ans: i64 = 0;
+    let mut hands: Vec<(Hand, i64)> = Vec::new();
+
+    for line in input.lines() {
+        let (hand, bet) = line.split_once(" ").unwrap();
+        let hand = Hand::from_str(hand).unwrap();
+        let bet = bet.parse::<i64>().unwrap();
+        hands.push((hand, bet));
     }
 
-    total
+    hands.sort();
+
+    for i in 0..hands.len() {
+        let (_, bet) = &hands[i];
+        ans += ((i + 1) as i64) * bet;
+    }
+
+    ans
 }
 
 #[cfg(test)]
@@ -47,9 +144,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn part2_process() {
-        let input = r#"Time:      71530
-Distance:  940200 "#;
-        assert_eq!(71503, process(input));
+    fn part1_process() {
+        let input = "32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483";
+        assert_eq!(5905, process(input))
     }
 }
