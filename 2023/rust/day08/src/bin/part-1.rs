@@ -1,3 +1,7 @@
+use std::collections::HashMap;
+
+use regex::Regex;
+
 fn main() {
     let input = include_str!("../../input.txt");
 
@@ -15,7 +19,44 @@ fn main() {
 }
 
 pub fn process(input: &str) -> i64 {
-    todo!("not implemented")
+    let first_line = input.lines().next().unwrap().to_string();
+
+    let instructions = Regex::new(r"(?m)^([A-Z]{3}) = \(([A-Z]{3}), ([A-Z]{3})\)$").unwrap();
+
+    let instructions: HashMap<String, (String, String)> = instructions
+        .captures_iter(&input)
+        .map(|c| {
+            (
+                c.get(1).unwrap().as_str().to_string(),
+                (
+                    c.get(2).unwrap().as_str().to_string(),
+                    c.get(3).unwrap().as_str().to_string(),
+                ),
+            )
+        })
+        .collect();
+
+    let mut i = 0;
+    let mut cur = "AAA";
+    while cur != "ZZZ" {
+        for char in first_line.chars() {
+            i += 1;
+            // println!("{cur}");
+            if cur == "ZZZ" {
+                break;
+            }
+            if char == 'L' {
+                cur = &instructions.get(cur).unwrap().0
+            } else if char == 'R' {
+                cur = &instructions.get(cur).unwrap().1
+            } else {
+                panic!("Unknown symbol")
+            }
+        }
+    }
+
+    // dbg!(i);
+    i
 }
 
 #[cfg(test)]
@@ -24,11 +65,15 @@ mod tests {
 
     #[test]
     fn part1_process() {
-        let input = "32T3K 765
-T55J5 684
-KK677 28
-KTJJT 220
-QQQJA 483";
-        assert_eq!(6440, process(input))
+        let input = "RL
+
+AAA = (BBB, CCC)
+BBB = (DDD, EEE)
+CCC = (ZZZ, GGG)
+DDD = (DDD, DDD)
+EEE = (EEE, EEE)
+GGG = (GGG, GGG)
+ZZZ = (ZZZ, ZZZ)";
+        assert_eq!(2, process(input))
     }
 }
