@@ -9,9 +9,5 @@ fn main() {
     dbg!(output);
 
     let elapsed = starttime.elapsed();
-    println!(
-        "took {}ms ({}us)  ",
-        elapsed.as_millis(),
-        elapsed.as_micros()
-    );
+    println!("took {}ms ({}us)", elapsed.as_millis(), elapsed.as_micros());
 }
