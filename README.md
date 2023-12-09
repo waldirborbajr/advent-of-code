@@ -1,6 +1,8 @@
-# Advent of Code
+<img src="./.assets/christmas_ferris.png" width="164">
 
-Solutions for the [Advent of Code](http://adventofcode.com/)
+# 🎄 Advent of Code 2023
+
+Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.rust-lang.org/).
 
 Answers are organized by year
 
