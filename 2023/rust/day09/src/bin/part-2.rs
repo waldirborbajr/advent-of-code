@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 fn main() {
     let input = include_str!("../../input.txt");
 
@@ -14,8 +16,41 @@ fn main() {
     );
 }
 
-pub fn process(input: &str) -> u128 {
-    todo!("process input")
+pub fn process(input: &str) -> i32 {
+    let sequences: Vec<Vec<i32>> = input
+        .lines()
+        .map(|line| {
+            line.split_whitespace()
+                .map(|x| x.parse::<i32>().unwrap())
+                .collect_vec()
+        })
+        .collect();
+
+    let res = sequences
+        .iter()
+        .map(|orig_seq| {
+            let mut seq = orig_seq.clone();
+            let mut intermediate_seqs = vec![];
+            loop {
+                let diffs = seq.iter().tuple_windows().map(|(a, b)| b - a).collect_vec();
+                if diffs.iter().all(|&x| x == 0) {
+                    break;
+                }
+
+                intermediate_seqs.push(diffs.clone());
+                seq = diffs;
+            }
+            let first_diff = intermediate_seqs
+                .iter()
+                .rev()
+                .map(|v| v.first().unwrap())
+                .fold(0, |acc, &x| x - acc);
+            (orig_seq, first_diff)
+        })
+        .map(|(seq, diff)| seq.first().unwrap() - diff)
+        .sum::<i32>();
+
+    res
 }
 
 #[cfg(test)]
@@ -24,16 +59,11 @@ mod tests {
 
     #[test]
     fn part1_process() {
-        let input = "LR
-
-11A = (11B, XXX)
-11B = (XXX, 11Z)
-11Z = (11B, XXX)
-22A = (22B, XXX)
-22B = (22C, 22C)
-22C = (22Z, 22Z)
-22Z = (22B, 22B)
-XXX = (XXX, XXX)";
+        let input = "5  10  13  16  21  30  45
+  5   3   3   5   9  15
+   -2   0   2   4   6
+      2   2   2   2
+        0   0   0";
         assert_eq!(1, process(input))
     }
 }

@@ -1,6 +1,4 @@
-use std::collections::HashMap;
-
-use regex::Regex;
+use itertools::Itertools;
 
 fn main() {
     let input = include_str!("../../input.txt");
@@ -18,8 +16,39 @@ fn main() {
     );
 }
 
-pub fn process(input: &str) -> i64 {
-    todo!("process input")
+pub fn process(input: &str) -> i32 {
+    let sequences: Vec<Vec<i32>> = input
+        .lines()
+        .map(|line| {
+            line.split_whitespace()
+                .map(|x| x.parse::<i32>().unwrap())
+                .collect_vec()
+        })
+        .collect();
+    let res = sequences
+        .iter()
+        .map(|orig_seq| {
+            let mut seq = orig_seq.clone();
+            let mut intermediate_seqs = vec![];
+            loop {
+                let diffs = seq.iter().tuple_windows().map(|(a, b)| b - a).collect_vec();
+                if diffs.iter().all(|&x| x == 0) {
+                    break;
+                }
+
+                intermediate_seqs.push(diffs.clone());
+                seq = diffs;
+            }
+            let final_diff = intermediate_seqs
+                .iter()
+                .map(|v| v.last().unwrap())
+                .sum::<i32>();
+            (orig_seq, final_diff)
+        })
+        .map(|(seq, diff)| seq.last().unwrap() + diff)
+        .sum::<i32>();
+
+    res
 }
 
 #[cfg(test)]
@@ -28,15 +57,9 @@ mod tests {
 
     #[test]
     fn part1_process() {
-        let input = "RL
-
-AAA = (BBB, CCC)
-BBB = (DDD, EEE)
-CCC = (ZZZ, GGG)
-DDD = (DDD, DDD)
-EEE = (EEE, EEE)
-GGG = (GGG, GGG)
-ZZZ = (ZZZ, ZZZ)";
+        let input = "0 3 6 9 12 15
+1 3 6 10 15 21
+10 13 16 21 30 45";
         assert_eq!(2, process(input))
     }
 }
