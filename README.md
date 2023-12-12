@@ -28,4 +28,5 @@ You don't need a computer science background to participate - just a little prog
 | [Day 09](https://adventofcode.com/2023/day/9) | ⭐ | ⭐ |
 | [Day 10](https://adventofcode.com/2023/day/10) | ⭐ | ⭐ |
 | [Day 11](https://adventofcode.com/2023/day/11) | ⭐ | ⭐ |
+| [Day 12](https://adventofcode.com/2023/day/12) | ⭐ | ⭐ |
 <!--- advent_readme_stars table --->
