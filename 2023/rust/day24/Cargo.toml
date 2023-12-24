@@ -1,8 +1,12 @@
 [package]
-name = "day14"
+name = "day24"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+indoc = "2.0.4"
+itertools = "0.12.0"
+# z3 = { version = "0.12.1", features = ["static-link-z3"] }
+z3 = "0.12.1"
